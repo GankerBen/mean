@@ -1,41 +1,55 @@
 'use strict';
 
 /**
+ * author: pandazhong
+ * email: 449678910@qq.com
+ * description: 用户模型定义
+ */
+
+/**
  * Module dependencies.
  */
-var mongoose  = require('mongoose'),
-    Schema    = mongoose.Schema,
-    crypto    = require('crypto'),
-          _   = require('lodash');
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    crypto = require('crypto'),
+    _ = require('lodash');
 
+// 2014-12-15
+// FIXME: 暂时不需要这个验证方法
 /**
  * Validations
  */
-var validatePresenceOf = function(value) {
-  // If you are authenticating by any of the oauth strategies, don't validate.
-  return (this.provider && this.provider !== 'local') || (value && value.length);
+var validatePresenceOf = function (value) {
+    // If you are authenticating by any of the oauth strategies, don't validate.
+    return (this.provider && this.provider !== 'local') || (value && value.length);
 };
 
-var validateUniqueEmail = function(value, callback) {
-  var User = mongoose.model('User');
-  User.find({
-    $and: [{
-      email: value
-    }, {
-      _id: {
-        $ne: this._id
-      }
-    }]
-  }, function(err, user) {
-    callback(err || user.length === 0);
-  });
+// 2014-12-15
+// FIXME:验证邮箱号码的唯一性
+var validateUniqueEmail = function (value, callback) {
+    console.log("email", value);
+    var User = mongoose.model('User');
+    User.find({
+        $and: [
+            {
+                user_email_address: value
+            },
+            {
+                _id: {
+                    $ne: this._id
+                }
+            }
+        ]
+    }, function (err, user) {
+        callback(err || user.length === 0);
+    });
 };
 
 /**
  * Getter
  */
-var escapeProperty = function(value) {
-  return _.escape(value);
+var escapeProperty = function (value) {
+    return _.escape(value);
 };
 
 /**
@@ -43,139 +57,117 @@ var escapeProperty = function(value) {
  */
 
 var UserSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    get: escapeProperty
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    // Regexp to validate emails with more strict rules as added in tests/users.js which also conforms mostly with RFC2822 guide lines
-    match: [/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'Please enter a valid email'],
-    validate: [validateUniqueEmail, 'E-mail address is already in-use']
-  },
-  username: {
-    type: String,
-    unique: true,
-    required: true,
-    get: escapeProperty
-  },
-  roles: {
-    type: Array,
-    default: ['authenticated']
-  },
-  hashed_password: {
-    type: String,
-    validate: [validatePresenceOf, 'Password cannot be blank']
-  },
-  provider: {
-    type: String,
-    default: 'local'
-  },
-  salt: String,
-  resetPasswordToken: String,
-  resetPasswordExpires: Date,
-  facebook: {},
-  twitter: {},
-  github: {},
-  google: {},
-  linkedin: {}
+
+    // 用户真实名
+    user_full_name: {
+        type: String,
+        required: true
+    },
+
+    // 用户名
+    user_name: {
+        type: String,
+        required: true
+    },
+
+    // 用户ID
+    user_id: {
+        type: String,
+        unique: true
+    },
+
+    // 用户密码
+    user_password: {
+        type: String,
+        required: true
+    },
+
+    // 用户上一次登陆的时间
+    user_last_login_time: {
+        type: Number
+    },
+
+    // 用户上一次登陆的IP
+    user_last_login_ip: {
+        type: String
+    },
+
+    // 用户的邮箱号码
+    user_email_address: {
+        type: String,
+        required: true,
+        unique: true,
+        // Regexp to validate emails with more strict rules as added in tests/users.js which also conforms mostly with RFC2822 guide lines
+        match: [/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'Please enter a valid email'],
+        validate: [validateUniqueEmail, 'E-mail address is already in-use']
+    },
+
+    // 用户帐号的可见性(可否被站内搜索)
+    // FIXME: 暂时不需要这个字段
+    user_account_visibility: {
+        type: String
+    },
+
+    // 用户描述
+    user_about: {
+        type: String
+    },
+
+    // 用户头像URL
+    user_profile_photo_url: {
+        type: String
+    },
+
+    // 用户性别
+    user_gender: {
+        type: String
+    },
+
+    // 用户喜欢的POST类型，包括文字、图片、video、live video等等
+    user_like_to_post_about: {
+        type: String
+    },
+
+    // 用户生日
+    user_was_born_on: {
+        type: Number
+    }
+
+    // 用户手机号码
+    // FIXME:暂时没有添加手机号码格式验证
+    //user_cellphone_number: {
+        //type: String,
+        //required: true,
+        //unique: true
+    //}
 });
 
+// 虚拟属性，用做属性别名，类似 AS3中的getter、setter属性方法，使用
+// 虚拟属性可以对set或get操作进行监控。
 /**
  * Virtuals
  */
-UserSchema.virtual('password').set(function(password) {
-  this._password = password;
-  this.salt = this.makeSalt();
-  this.hashed_password = this.hashPassword(password);
-}).get(function() {
-  return this._password;
+UserSchema.virtual('password').set(function (password) {
+    this.user_password = password;
+}).get(function () {
+    return this.user_password;
 });
 
+// FIXME:暂时不需要这个hook！
 /**
  * Pre-save hook
  */
-UserSchema.pre('save', function(next) {
-  if (this.isNew && this.provider === 'local' && this.password && !this.password.length)
-    return next(new Error('Invalid password'));
-  next();
-});
+//UserSchema.pre('save', function (next) {
+//    if (this.isNew && this.provider === 'local' && this.password && !this.password.length)
+//        return next(new Error('Invalid password'));
+//    next();
+//});
 
 /**
  * Methods
  */
 UserSchema.methods = {
-
-  /**
-   * HasRole - check if the user has required role
-   *
-   * @param {String} plainText
-   * @return {Boolean}
-   * @api public
-   */
-  hasRole: function(role) {
-    var roles = this.roles;
-    return roles.indexOf('admin') !== -1 || roles.indexOf(role) !== -1;
-  },
-
-  /**
-   * IsAdmin - check if the user is an administrator
-   *
-   * @return {Boolean}
-   * @api public
-   */
-  isAdmin: function() {
-    return this.roles.indexOf('admin') !== -1;
-  },
-
-  /**
-   * Authenticate - check if the passwords are the same
-   *
-   * @param {String} plainText
-   * @return {Boolean}
-   * @api public
-   */
-  authenticate: function(plainText) {
-    return this.hashPassword(plainText) === this.hashed_password;
-  },
-
-  /**
-   * Make salt
-   *
-   * @return {String}
-   * @api public
-   */
-  makeSalt: function() {
-    return crypto.randomBytes(16).toString('base64');
-  },
-
-  /**
-   * Hash password
-   *
-   * @param {String} password
-   * @return {String}
-   * @api public
-   */
-  hashPassword: function(password) {
-    if (!password || !this.salt) return '';
-    var salt = new Buffer(this.salt, 'base64');
-    return crypto.pbkdf2Sync(password, salt, 10000, 64).toString('base64');
-  },
-
-  /**
-   * Hide security sensitive fields
-   * 
-   * @returns {*|Array|Binary|Object}
-   */
-  toJSON: function() {
-    var obj = this.toObject();
-    delete obj.hashed_password;
-    delete obj.salt;
-    return obj;
-  }
+    // TODO:自定义方法，格式如 funcName: function(args){}，多个方法用 ',' 隔开
 };
 
 mongoose.model('User', UserSchema);
