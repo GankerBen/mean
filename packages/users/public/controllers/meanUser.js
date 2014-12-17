@@ -25,7 +25,6 @@ angular.module('mean.users')
         }
     ])
 
-    // FIXME: 暂时只支持通过邮箱号码创建角色
     .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
         function ($scope, $rootScope, $http, $location, Global) {
             // This object will be filled by the form
@@ -50,17 +49,14 @@ angular.module('mean.users')
             // Register the login() function
             $scope.login = function () {
                 $http.post('/login', {
-                    user_email_address: $scope.user.email,
-                    user_password: $scope.user.password
+                    email: $scope.user.email,
+                    password: $scope.user.password
                 })
                     .success(function (response) {
                         // authentication OK
                         $scope.loginError = 0;
                         $rootScope.user = response.user;
                         $rootScope.$emit('loggedin');
-                        console.log("rootScope", $rootScope);
-                        console.log("redirect", response.redirect);
-                        console.log("window.location.href", window.location.href);
 
                         // FIXME:强制导航到主页可能会有BUG，如果不这样，整个页面会重新加载，并导致AngularJS重新初始化，相关的数据会被清除
                         // FIXME:这只是暂时的解决办法，正常情况下，应该从服务器请求数据。
@@ -117,11 +113,11 @@ angular.module('mean.users')
                 $scope.usernameError = null;
                 $scope.registerError = null;
                 $http.post('/register', {
-                    user_email_address: $scope.user.email,
-                    user_password: $scope.user.password,
+                    email: $scope.user.email,
+                    password: $scope.user.password,
                     confirmPassword: $scope.user.confirmPassword,
-                    user_name: $scope.user.username,
-                    user_full_name: $scope.user.name
+                    name: $scope.user.username,
+                    full_name: $scope.user.name
                 })
                     .success(function () {
                         // authentication OK
@@ -129,11 +125,11 @@ angular.module('mean.users')
 
                         // FIXME:提交过程中，如果用户修改输入框的内容，可能会造成bug！
                         $rootScope.user = {
-                            user_email_address: $scope.user.email,
-                            user_password: $scope.user.password,
+                            email: $scope.user.email,
+                            password: $scope.user.password,
                             confirmPassword: $scope.user.confirmPassword,
-                            user_name: $scope.user.username,
-                            user_full_name: $scope.user.name
+                            name: $scope.user.username,
+                            full_name: $scope.user.name
                         };
 
                         Global.user = $rootScope.user;

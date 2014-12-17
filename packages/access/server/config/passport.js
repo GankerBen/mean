@@ -29,12 +29,12 @@ module.exports = function (passport) {
 
     // Use local strategy
     passport.use(new LocalStrategy({
-            usernameField: 'user_email_address',
-            passwordField: 'user_password'
+            usernameField: 'email',
+            passwordField: 'password'
         },
-        function (user_email_address, user_password, done) {
+        function (email, password, done) {
             User.findOne({
-                user_email_address: user_email_address
+                email: email
             }, function (err, user) {
                 if (err) {
                     return done(err);
@@ -44,7 +44,7 @@ module.exports = function (passport) {
                         message: 'Unknown user'
                     });
                 }
-                if (user.user_password != user_password) {
+                if (user.password != password) {
                     return done(null, false, {
                         message: 'Invalid password'
                     });

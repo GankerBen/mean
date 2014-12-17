@@ -53,21 +53,19 @@ exports.session = function (req, res) {
  */
 exports.create = function (req, res, next) {
 
-    // because we set our user.provider to local our models/user.js validation will always be true
-    req.assert('user_full_name', 'You must enter a name').notEmpty();
-    req.assert('user_email_address', 'You must enter a valid email address').isEmail();
-    req.assert('user_password', 'Password must be between 8-20 characters long').len(8, 20);
-    req.assert('user_name', 'Username cannot be more than 20 characters').len(1, 20);
-    req.assert('confirmPassword', 'Passwords do not match').equals(req.body.user_password);
+    // 断言
+    req.assert('full_name', 'You must enter a name').notEmpty();
+    req.assert('email', 'You must enter a valid email address').isEmail();
+    req.assert('password', 'Password must be between 8-20 characters long').len(8, 20);
+    req.assert('name', 'Username cannot be more than 20 characters').len(1, 20);
+    req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
 
-    req.body.user_id = Math.random() * 10000000;
-    req.body.user_last_login_time = 10000000;
-    req.body.user_last_login_ip = 10000000;
-    req.body.user_account_visibility = 10000000;
-    req.body.user_about = 10000000;
-    req.body.user_gender = 10000000;
-    req.body.user_like_to_post_about = 10000000;
-    req.body.user_was_born_on = 10000000;
+    // FIXME: 如下字段需要在用户中心完善
+    req.body.visibility = 10000000;
+    req.body.about = 10000000;
+    req.body.gender = 10000000;
+    req.body.like = 10000000;
+    req.body.birthday = 10000000;
 
     var user = new User(req.body);
     var errors = req.validationErrors();
