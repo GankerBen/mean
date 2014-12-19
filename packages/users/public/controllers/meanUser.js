@@ -62,7 +62,8 @@ angular.module('mean.users')
                         // FIXME:这只是暂时的解决办法，正常情况下，应该从服务器请求数据。
 
                         $location.url('/');
-
+                        //$location.url('/forgot-password');
+                        //window.location = "/forgot-password";
 //                        if (response.redirect) {
 //                            if (window.location.href === response.redirect) {
 //                                //This is so an admin user will get full admin page
@@ -75,7 +76,7 @@ angular.module('mean.users')
 //                        }
                     })
                     .error(function () {
-                        $scope.loginerror = 'Authentication failed yeah.';
+                        $scope.loginerror = 'Authentication failed.';
                     });
             };
         }
@@ -128,8 +129,8 @@ angular.module('mean.users')
                             email: $scope.user.email,
                             password: $scope.user.password,
                             confirmPassword: $scope.user.confirmPassword,
-                            name: $scope.user.username,
-                            full_name: $scope.user.name
+                            username: $scope.user.username,
+                            name: $scope.user.name
                         };
 
                         Global.user = $rootScope.user;
@@ -196,6 +197,80 @@ angular.module('mean.users')
                         else
                             $scope.validationError = error;
                     });
+            };
+        }
+    ])
+    .controller('ProfileCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
+        function ($scope, $rootScope, $http, $location, Global) {
+
+            // FIXME:暂时使用本地虚拟数据
+            // $http.get('/get-user-info').success(function(info){todo})
+            $scope.global = Global;
+            $scope.global.user.profile = 'dummy';
+
+            // 存档事件(Archived Events)
+            $scope.global.archivedEvents = [1, 2, 3, 4, 5];
+
+            // 草稿事件(Draft Events)
+            $scope.global.draftEvents = [1, 2, 3, 4, 5];
+
+            // 正在直播、将要直播的事件(Live Events)
+            $scope.global.liveEvents = [1, 2, 3, 4, 5];
+
+            // 编辑帐号
+            $scope.editAccount = function () {
+                
+            }
+        }
+    ])
+    .controller('editAccountCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
+        function ($scope, $rootScope, $http, $location, Global) {
+
+            // FIXME:暂时使用本地虚拟数据
+            $scope.global = Global;
+            $scope.global.user.full_name = 'your full name';
+            $scope.global.user.email = 'your email';
+            $scope.global.user.profile = 'your profile photo';
+
+            $scope.createTempUser = function () {
+                return {
+                    full_name: $scope.global.user.full_name,
+                    email: $scope.global.user.email,
+                    profile: $scope.global.user.profile
+                };
+            }
+
+            // 临时用于显示的用户字段信息
+            $scope.global.tempUser = $scope.createTempUser();
+
+            // 保存改动
+            $scope.saveChange = function () {
+
+                // 提交改动之前先确认确实有改动
+                if($scope.diff())
+                {
+                    $http.post('/save-change', {
+                        email: $scope.global.tempUser.email,
+                        full_name: $scope.global.tempUser.full_name
+                    }).success(function (user) {
+                        console.log('改动已生效');
+                        $scope.global.tempUser = $scope.createTempUser();
+                    })
+                }
+            };
+            
+            $scope.diff = function () {
+                if($scope.global.tempUser.full_name == $scope.global.user.full_name
+                    && $scope.global.tempUser.email == $scope.global.user.email
+                    && $scope.global.tempUser.profile == $scope.global.user.profile)
+                {
+                    console.log('no change');
+                    return false;
+                }
+
+                console.log('changed!');
+
+                return true;
             };
         }
     ]);

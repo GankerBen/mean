@@ -1,0 +1,62 @@
+<div data-ng-controller="HeaderController">
+    <div data-ng-controller="ProfileCtrl">
+        <!-- 头像、名字-->
+        <div>
+            <img ng-src="{{global.user.profile}}" ng-click=""/>
+
+            <h1>{{global.user.name}}</h1>
+        </div>
+
+        <!-- 创建事件、编辑账号、下载直播软件 -->
+        <div style="margin-top: 50px">
+            <a href="javascript:(0)" ng-click="" style="margin-left: 50px">创建事件</a>
+            <a ui-sref="auth.edit" style="margin-left: 50px">编辑帐号</a>
+            <a href="javascript:(0)" ng-click="" style="margin-left: 50px">下载直播软件</a>
+        </div>
+
+        <!-- 存档事件列表 -->
+        <div style="margin-top: 50px">
+            <div>
+                <h2>存档事件列表</h2>
+            </div>
+            <div ng-repeat="event in global.archivedEvents" style="float: left">
+                <div style="margin-left: 50px">
+                    <a href="#">
+                        <h3>{{event}}</h3>
+                    </a>
+                </div>
+            </div>
+            <div style="clear: both"></div>
+        </div>
+
+        <!-- 草稿事件列表 -->
+        <div>
+            <div>
+                <h2>草稿事件列表</h2>
+            </div>
+            <div ng-repeat="event in global.draftEvents" style="float: left">
+                <div style="margin-left: 50px">
+                    <a href="#">
+                        <h3>{{event}}</h3>
+                    </a>
+                </div>
+            </div>
+            <div style="clear: both"></div>
+        </div>
+
+        <!-- 直播(或将要直播)事件列表 -->
+        <div>
+            <div>
+                <h2>直播事件列表</h2>
+            </div>
+            <div ng-repeat="event in global.liveEvents" style="float: left">
+                <div style="margin-left: 50px">
+                    <a href="#">
+                        <h3>{{event}}</h3>
+                    </a>
+                </div>
+            </div>
+            <div style="clear: both"></div>
+        </div>
+    </div>
+</div>

@@ -1,12 +1,17 @@
 'use strict';
 
 var path = require('path'),
-  rootPath = path.normalize(__dirname + '/../..');
+  rootPath = path.normalize(__dirname + '/../..'),
+    os = require('os'),
+    isProductionEnv;
+
+isProductionEnv = os.type().toLowerCase().indexOf('win') === -1;
+console.log('current os is', os.type());
 
 module.exports = {
   root: rootPath,
   http: {
-    port: process.env.PORT || 3000
+    port: isProductionEnv ? 80 : process.env.PORT || 3000
   },
   https: {
     port: false,
@@ -17,13 +22,13 @@ module.exports = {
       cert: ''
     }
   },
-  hostname: process.env.HOST || process.env.HOSTNAME,
+  hostname: isProductionEnv ? '0.0.0.0' : process.env.HOST || process.env.HOSTNAME,
   db: process.env.MONGOHQ_URL,
   templateEngine: 'swig',
 
   // The secret should be set to a non-guessable string that
   // is used to compute a session hash
-  sessionSecret: 'MEAN',
+  sessionSecret: 'buka',
 
   // The name of the MongoDB collection to store sessions in
   sessionCollection: 'sessions',
@@ -45,3 +50,5 @@ module.exports = {
   // The session cookie name
   sessionName: 'connect.sid'
 };
+
+

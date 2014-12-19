@@ -30,6 +30,10 @@ angular.module('mean.users').config(['$meanStateProvider',
                 url: '/auth',
                 templateUrl: 'users/views/index.html'
             })
+            .state('auth.profile', {
+                url: '/profile',
+                templateUrl: 'users/views/profile.html'
+            })
             .state('auth.login', {
                 url: '/login',
                 templateUrl: 'users/views/login.html',
@@ -57,6 +61,10 @@ angular.module('mean.users').config(['$meanStateProvider',
                 resolve: {
                     loggedin: checkLoggedOut
                 }
+            })
+            .state('auth.edit', {
+                url: '/my_account/edit',
+                templateUrl: 'users/views/edit-account.html'
             });
     }
 ]);

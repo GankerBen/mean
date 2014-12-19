@@ -5,10 +5,6 @@ angular.module('mean.system').controller('HeaderController', ['$scope', '$rootSc
         $scope.global = Global;
         $scope.menus = {};
 
-        console.log("$rootScope", $rootScope);
-        console.log("Global", Global);
-        console.log("$scope", $scope);
-
         // Default hard coded menu items for main menu
         var defaultMainMenu = [];
 
@@ -29,8 +25,6 @@ angular.module('mean.system').controller('HeaderController', ['$scope', '$rootSc
         $scope.isCollapsed = false;
 
         $rootScope.$on('loggedin', function () {
-
-            console.log("on loggedin $rootScope.user", $rootScope.user);
 
             queryMenu('main', defaultMainMenu);
 

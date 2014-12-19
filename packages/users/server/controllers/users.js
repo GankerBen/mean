@@ -190,6 +190,16 @@ function sendMail(mailOptions) {
 }
 
 /**
+ * 用户修改了个人资料
+ * @param req
+ * @param res
+ * @param next
+ */
+exports.saveChange = function (req, res, next) {
+    res.send('save change success');
+};
+
+/**
  * Callback for forgot password link
  */
 exports.forgotpassword = function (req, res, next) {
