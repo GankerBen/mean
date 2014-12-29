@@ -1,24 +1,17 @@
 'use strict';
 
-/**
- * author: pandazhong
- * email: 449678910@qq.com
- * description: 用户模型定义
- */
 
-/**
- * Module dependencies.
- */
+/*******************************************/
+// 依赖的模块
+/*******************************************/
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     crypto = require('crypto'),
     _ = require('lodash');
 
-/**
- * 验证邮箱号码的唯一性
- * @param value
- * @param callback
- */
+/*******************************************/
+// 验证邮箱号码的唯一性
+/*******************************************/
 var validateUniqueEmail = function (value, callback) {
     var User = mongoose.model('User');
     User.find({
@@ -37,17 +30,16 @@ var validateUniqueEmail = function (value, callback) {
     });
 };
 
-/**
- * Getter
- */
+/*******************************************/
+// 对字符串进行转义
+/*******************************************/
 var escapeProperty = function (value) {
     return _.escape(value);
 };
 
-/**
- * User Schema
- */
-
+/*******************************************/
+// 用户数据模型
+/*******************************************/
 var UserSchema = new Schema({
 
     // 用户真实名
@@ -108,6 +100,19 @@ var UserSchema = new Schema({
         type: Number
     }
 
+
+    // 重置密码需要的验证码
+//    resetPasswordToken: {
+//        type: String,
+//        default: undefined
+//    },
+//
+//    // 重置密码的时限
+//    resetPasswordExpires: {
+//        type: Date,
+//        default: undefined
+//    }
+
     // 手机号码
     // FIXME:暂时没有添加手机号码格式验证
     //phone: {
@@ -132,11 +137,11 @@ var UserSchema = new Schema({
  * Pre-save hook
  * 在save之前做一些操作
  */
-UserSchema.pre('save', function (next) {
-//    if (this.isNew && this.provider === 'local' && this.password && !this.password.length)
-//        return next(new Error('Invalid password'));
-    next();
-});
+//UserSchema.pre('save', function (next) {
+////    if (this.isNew && this.provider === 'local' && this.password && !this.password.length)
+////        return next(new Error('Invalid password'));
+//    next();
+//});
 
 /**
  * Methods
@@ -147,14 +152,14 @@ UserSchema.pre('save', function (next) {
  * user.dummy();
  * user.dummy2();
  */
-UserSchema.methods = {
-    dummy: function () {
-        
-    },
-    
-    dummy2: function () {
-
-    }
-};
+//UserSchema.methods = {
+//    dummy: function () {
+//
+//    },
+//
+//    dummy2: function () {
+//
+//    }
+//};
 
 mongoose.model('User', UserSchema);

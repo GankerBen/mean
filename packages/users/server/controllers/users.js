@@ -1,8 +1,9 @@
 'use strict';
 
-/**
- * Module dependencies.
- */
+
+/*******************************************/
+// 依赖的模块
+/*******************************************/
 var mongoose = require('mongoose'),
     User = mongoose.model('User'),
     async = require('async'),
@@ -11,16 +12,10 @@ var mongoose = require('mongoose'),
     nodemailer = require('nodemailer'),
     templates = require('../template');
 
-/**
- * Auth callback
- */
-exports.authCallback = function (req, res) {
-    res.redirect('/');
-};
 
-/**
- * Show login form
- */
+/*******************************************/
+// 重定向至登陆页面
+/*******************************************/
 exports.signin = function (req, res) {
     if (req.isAuthenticated()) {
         return res.redirect('/');
@@ -28,29 +23,28 @@ exports.signin = function (req, res) {
     res.redirect('#!/login');
 };
 
-/**
- * Logout
- */
+
+/*******************************************/
+// 重定向至主页面
+/*******************************************/
 exports.signout = function (req, res) {
     req.logout();
     res.redirect('/');
 };
 
-/**
- * Session
- */
-exports.session = function (req, res) {
-    res.redirect('/');
+
+/*******************************************/
+// 保存用户对个信息的修改
+/*******************************************/
+exports.saveChange = function (req, res, next) {
+    res.send('save change success');
+    // TODO
 };
 
-/**
- * FIXME: 目前只支持通过邮箱号码创建角色，以后会支持通过手机号码创建角色
- * 创建角色
- * @param req
- * @param res
- * @param next
- * @returns {*|void}
- */
+
+/*******************************************/
+// 注册
+/*******************************************/
 exports.create = function (req, res, next) {
 
     // 断言
@@ -114,33 +108,23 @@ exports.create = function (req, res, next) {
         res.status(200);
     });
 };
-/**
- * Send User
- */
-exports.me = function (req, res) {
-    res.json(req.user || null);
-};
 
-/**
- * Find user by id
- */
-exports.user = function (req, res, next, id) {
-    User
-        .findOne({
-            _id: id
-        })
-        .exec(function (err, user) {
-            if (err) return next(err);
-            if (!user) return next(new Error('Failed to load User ' + id));
-            req.profile = user;
-            next();
-        });
-};
 
-/**
- * Resets the password
- */
+/*******************************************/
+// 发送邮件
+/*******************************************/
+function sendMail(mailOptions) {
+    var transport = nodemailer.createTransport(config.mailer);
+    transport.sendMail(mailOptions, function (err, response) {
+        if (err) return err;
+        return response;
+    });
+}
 
+
+/*******************************************/
+// 重置密码
+/*******************************************/
 exports.resetpassword = function (req, res, next) {
     User.findOne({
         resetPasswordToken: req.params.token,
@@ -178,30 +162,10 @@ exports.resetpassword = function (req, res, next) {
     });
 };
 
-/**
- * Send reset password email
- */
-function sendMail(mailOptions) {
-    var transport = nodemailer.createTransport(config.mailer);
-    transport.sendMail(mailOptions, function (err, response) {
-        if (err) return err;
-        return response;
-    });
-}
 
-/**
- * 用户修改了个人资料
- * @param req
- * @param res
- * @param next
- */
-exports.saveChange = function (req, res, next) {
-    res.send('save change success');
-};
-
-/**
- * Callback for forgot password link
- */
+/*******************************************/
+// 发送重置密码的链接到指定邮箱
+/*******************************************/
 exports.forgotpassword = function (req, res, next) {
     async.waterfall([
 
@@ -255,4 +219,45 @@ exports.forgotpassword = function (req, res, next) {
             res.json(response);
         }
     );
+};
+
+/******************************************************************************************/
+// FIXME:下面这些API将不会再被支持，但为了保持相关逻辑，暂时不会被删除！
+/******************************************************************************************/
+
+/**
+ * Send User
+ */
+exports.me = function (req, res) {
+    res.json(req.user || null);console.log('send user', req.user);
+};
+
+/**
+ * Find user by id
+ */
+exports.user = function (req, res, next, id) {
+    User
+        .findOne({
+            _id: id
+        })
+        .exec(function (err, user) {
+            if (err) return next(err);
+            if (!user) return next(new Error('Failed to load User ' + id));
+            req.profile = user;
+            next();
+        });
+};
+
+/**
+ * Auth callback
+ */
+exports.authCallback = function (req, res) {
+    res.redirect('/');
+};
+
+/**
+ * Session
+ */
+exports.session = function (req, res) {
+    res.redirect('/');
 };
