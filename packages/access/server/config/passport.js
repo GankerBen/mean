@@ -12,12 +12,10 @@ module.exports = function (passport) {
         done(null, user.id);
     });
 
-    // Deserialize the user object based on a pre-serialized token
-    // which is the user id
     passport.deserializeUser(function (id, done) {
         User.findOne({
             _id: id
-        }, '-salt -hashed_password', function (err, user) {
+        }, function (err, user) {
             done(err, user);
         });
     });

@@ -4,27 +4,6 @@ var clientIdProperty = 'clientID',
     defaultPrefix = 'DEFAULT_';
 
 angular.module('mean.users')
-
-    // FIXME:暂时不需要该控制器！因为项目暂时只使用passort-local来进行登陆验证，不会使用如facebook等相关社区OAuth进行验证
-    .controller('AuthCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
-        function ($scope, $rootScope, $http, $location, Global) {
-            // This object will contain list of available social buttons to authorize
-            $scope.socialButtons = {};
-            $scope.socialButtonsCounter = 0;
-            $scope.global = Global;
-            $http.get('/get-config')
-                .success(function (config) {
-                    for (var conf in config) {
-                        // Do not show auth providers that have the value DEFAULT as their clientID
-                        if (config[conf].hasOwnProperty(clientIdProperty) && config[conf][clientIdProperty].indexOf(defaultPrefix) === -1) {
-                            $scope.socialButtons[conf] = true;
-                            $scope.socialButtonsCounter += 1;
-                        }
-                    }
-                });
-        }
-    ])
-
     .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
         function ($scope, $rootScope, $http, $location, Global) {
             // This object will be filled by the form
@@ -46,34 +25,19 @@ angular.module('mean.users')
                 $scope.input.tooltipText = $scope.input.tooltipText === 'Show password' ? 'Hide password' : 'Show password';
             };
 
-            // Register the login() function
             $scope.login = function () {
                 $http.post('/login', {
                     email: $scope.user.email,
                     password: $scope.user.password
                 })
                     .success(function (response) {
-                        // authentication OK
                         $scope.loginError = 0;
                         $rootScope.user = response.user;
                         $rootScope.$emit('loggedin');
 
                         // FIXME:强制导航到主页可能会有BUG，如果不这样，整个页面会重新加载，并导致AngularJS重新初始化，相关的数据会被清除
-                        // FIXME:这只是暂时的解决办法，正常情况下，应该从服务器请求数据。
 
                         $location.url('/');
-                        //$location.url('/forgot-password');
-                        //window.location = "/forgot-password";
-//                        if (response.redirect) {
-//                            if (window.location.href === response.redirect) {
-//                                //This is so an admin user will get full admin page
-//                                window.location.reload();
-//                            } else {
-//                                window.location = response.redirect;
-//                            }
-//                        } else {
-//                            $location.url('/');
-//                        }
                     })
                     .error(function () {
                         $scope.loginerror = 'Authentication failed.';
@@ -219,7 +183,7 @@ angular.module('mean.users')
 
             // 编辑帐号
             $scope.editAccount = function () {
-                
+
             }
         }
     ])
@@ -247,8 +211,7 @@ angular.module('mean.users')
             $scope.saveChange = function () {
 
                 // 提交改动之前先确认确实有改动
-                if($scope.diff())
-                {
+                if ($scope.diff()) {
                     $http.post('/save-change', {
                         email: $scope.global.tempUser.email,
                         full_name: $scope.global.tempUser.full_name
@@ -258,12 +221,11 @@ angular.module('mean.users')
                     })
                 }
             };
-            
+
             $scope.diff = function () {
-                if($scope.global.tempUser.full_name == $scope.global.user.full_name
+                if ($scope.global.tempUser.full_name == $scope.global.user.full_name
                     && $scope.global.tempUser.email == $scope.global.user.email
-                    && $scope.global.tempUser.profile == $scope.global.user.profile)
-                {
+                    && $scope.global.tempUser.profile == $scope.global.user.profile) {
                     console.log('no change');
                     return false;
                 }

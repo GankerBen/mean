@@ -14,31 +14,11 @@ var mongoose = require('mongoose'),
 
 
 /*******************************************/
-// 重定向至登陆页面
-/*******************************************/
-exports.signin = function (req, res) {
-    if (req.isAuthenticated()) {
-        return res.redirect('/');
-    }
-    res.redirect('#!/login');
-};
-
-
-/*******************************************/
-// 重定向至主页面
+// 退出登陆
 /*******************************************/
 exports.signout = function (req, res) {
     req.logout();
     res.redirect('/');
-};
-
-
-/*******************************************/
-// 保存用户对个信息的修改
-/*******************************************/
-exports.saveChange = function (req, res, next) {
-    res.send('save change success');
-    // TODO
 };
 
 
@@ -67,8 +47,6 @@ exports.create = function (req, res, next) {
     if (errors) {
         return res.status(400).send(errors);
     }
-
-    // Hard coded for now. Will address this with the user permissions system in v0.3.5
 
     user.save(function (err) {
         if (err) {
@@ -219,45 +197,4 @@ exports.forgotpassword = function (req, res, next) {
             res.json(response);
         }
     );
-};
-
-/******************************************************************************************/
-// FIXME:下面这些API将不会再被支持，但为了保持相关逻辑，暂时不会被删除！
-/******************************************************************************************/
-
-/**
- * Send User
- */
-exports.me = function (req, res) {
-    res.json(req.user || null);console.log('send user', req.user);
-};
-
-/**
- * Find user by id
- */
-exports.user = function (req, res, next, id) {
-    User
-        .findOne({
-            _id: id
-        })
-        .exec(function (err, user) {
-            if (err) return next(err);
-            if (!user) return next(new Error('Failed to load User ' + id));
-            req.profile = user;
-            next();
-        });
-};
-
-/**
- * Auth callback
- */
-exports.authCallback = function (req, res) {
-    res.redirect('/');
-};
-
-/**
- * Session
- */
-exports.session = function (req, res) {
-    res.redirect('/');
 };
