@@ -4,34 +4,54 @@ var clientIdProperty = 'clientID',
     defaultPrefix = 'DEFAULT_';
 
 angular.module('mean.users')
-    .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
-        function ($scope, $rootScope, $http, $location, Global) {
+    .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global', 'validator',
+        function ($scope, $rootScope, $http, $location, Global, validator) {
             // This object will be filled by the form
             $scope.user = {};
             $scope.global = Global;
             $scope.global.registerForm = false;
             $scope.input = {
                 type: 'password',
-                placeholder: 'Password',
-                confirmPlaceholder: 'Repeat Password',
+                placeholder: '密码',
+                confirmPlaceholder: '重复密码',
                 iconClass: '',
-                tooltipText: 'Show password'
+                tooltipText: '显示密码'
             };
 
             $scope.togglePasswordVisible = function () {
                 $scope.input.type = $scope.input.type === 'text' ? 'password' : 'text';
-                $scope.input.placeholder = $scope.input.placeholder === 'Password' ? 'Visible Password' : 'Password';
+                $scope.input.placeholder = $scope.input.placeholder === '密码' ? '密码可见性' : '密码';
                 $scope.input.iconClass = $scope.input.iconClass === 'icon_hide_password' ? '' : 'icon_hide_password';
-                $scope.input.tooltipText = $scope.input.tooltipText === 'Show password' ? 'Hide password' : 'Show password';
+                $scope.input.tooltipText = $scope.input.tooltipText === '显示密码' ? '隐藏密码' : '显示密码';
             };
 
             $scope.login = function () {
+
+                var accountName = $scope.user.email;
+                var isEmail = validator.isEmail(accountName);
+                var isPhoneNumber = false;
+
+                if(!accountName){
+                    return $scope.loginerror = '请输入帐号';
+                }
+
+                if(!$scope.user.password){
+                    return $scope.loginerror = '请输入密码';
+                }
+
+                if(!isEmail){
+                    isPhoneNumber = validator.isPhoneNumber(accountName);
+                    if(!isPhoneNumber){
+                        return $scope.loginerror = '邮箱号码或手机号码格式不正确';
+                    }
+                }
+
                 $http.post('/login', {
                     email: $scope.user.email,
                     password: $scope.user.password
                 })
                     .success(function (response) {
-                        $scope.loginError = 0;
+                        $scope.loginerror = '';
                         $rootScope.user = response.user;
                         $rootScope.$emit('loggedin');
 
@@ -40,43 +60,55 @@ angular.module('mean.users')
                         $location.url('/');
                     })
                     .error(function () {
-                        $scope.loginerror = 'Authentication failed.';
+                        $scope.loginerror = '账号或密码错误';
                     });
             };
         }
     ])
 
     // FIXME: 暂时只支持通过邮箱号码创建角色
-    .controller('RegisterCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
-        function ($scope, $rootScope, $http, $location, Global) {
+    .controller('RegisterCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global', 'validator',
+        function ($scope, $rootScope, $http, $location, Global, validator) {
             $scope.user = {};
             $scope.global = Global;
             $scope.global.registerForm = true;
             $scope.input = {
                 type: 'password',
-                placeholder: 'Password',
-                placeholderConfirmPass: 'Repeat Password',
+                placeholder: '密码',
+                placeholderConfirmPass: '重复密码',
                 iconClassConfirmPass: '',
-                tooltipText: 'Show password',
-                tooltipTextConfirmPass: 'Show password'
+                tooltipText: '显示密码',
+                tooltipTextConfirmPass: '显示密码'
             };
 
             $scope.togglePasswordVisible = function () {
                 $scope.input.type = $scope.input.type === 'text' ? 'password' : 'text';
-                $scope.input.placeholder = $scope.input.placeholder === 'Password' ? 'Visible Password' : 'Password';
+                $scope.input.placeholder = $scope.input.placeholder === 'Password' ? '密码可见' : '密码';
                 $scope.input.iconClass = $scope.input.iconClass === 'icon_hide_password' ? '' : 'icon_hide_password';
-                $scope.input.tooltipText = $scope.input.tooltipText === 'Show password' ? 'Hide password' : 'Show password';
+                $scope.input.tooltipText = $scope.input.tooltipText === '显示密码' ? '隐藏密码' : '显示密码';
             };
             $scope.togglePasswordConfirmVisible = function () {
                 $scope.input.type = $scope.input.type === 'text' ? 'password' : 'text';
-                $scope.input.placeholderConfirmPass = $scope.input.placeholderConfirmPass === 'Repeat Password' ? 'Visible Password' : 'Repeat Password';
+                $scope.input.placeholderConfirmPass = $scope.input.placeholderConfirmPass === '重复密码' ? '显示密码' : '重复密码';
                 $scope.input.iconClassConfirmPass = $scope.input.iconClassConfirmPass === 'icon_hide_password' ? '' : 'icon_hide_password';
-                $scope.input.tooltipTextConfirmPass = $scope.input.tooltipTextConfirmPass === 'Show password' ? 'Hide password' : 'Show password';
+                $scope.input.tooltipTextConfirmPass = $scope.input.tooltipTextConfirmPass === '显示密码' ? '隐藏密码' : '显示密码';
             };
 
             $scope.register = function () {
                 $scope.usernameError = null;
                 $scope.registerError = null;
+
+                var accountName = $scope.user.email;
+                var isEmail = validator.isEmail(accountName);
+                var isPhoneNumber = false;
+
+                if(!isEmail){
+                    isPhoneNumber = validator.isPhoneNumber(accountName);
+                    if(!isPhoneNumber){
+                        return $scope.registerError = [{msg:'邮箱号码或手机号码格式不正确'}];
+                    }
+                }
+
                 $http.post('/register', {
                     email: $scope.user.email,
                     password: $scope.user.password,
@@ -104,21 +136,35 @@ angular.module('mean.users')
                     })
                     .error(function (error) {
                         // Error: authentication failed
-                        if (error === 'Username already taken') {
+                        if (error === '用户名已经存在') {
                             $scope.usernameError = error;
-                        } else if (error === 'Email already taken') {
+                        } else if (error === '邮箱号码或手机号已经存在') {
                             $scope.emailError = error;
-                        } else $scope.registerError = error;
+                        } else if (error === '手机号码格式不正确') {
+                            $scope.emailError = error;
+                        }else $scope.registerError = error;
                     });
             };
         }
     ])
-    .controller('ForgotPasswordCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global',
-        function ($scope, $rootScope, $http, $location, Global) {
+    .controller('ForgotPasswordCtrl', ['$scope', '$rootScope', '$http', '$location', 'Global', 'validator',
+        function ($scope, $rootScope, $http, $location, Global, validator) {
             $scope.user = {};
             $scope.global = Global;
             $scope.global.registerForm = false;
             $scope.forgotpassword = function () {
+
+                var accountName = $scope.user.email;
+                var isEmail = validator.isEmail(accountName);
+                var isPhoneNumber = false;
+
+                if(!isEmail){
+                    isPhoneNumber = validator.isPhoneNumber(accountName);
+                    if(!isPhoneNumber){
+                        return $scope.response = {status:'warning', message:'邮箱号码或手机号码格式不正确'};
+                    }
+                }
+
                 $http.post('/forgot-password', {
                     text: $scope.user.email
                 })

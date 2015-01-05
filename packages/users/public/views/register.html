@@ -4,31 +4,31 @@
     </div>
     <div class="alert alert-danger animated fadeIn" ng-show="usernameError">{{usernameError}}</div>
     <div class="alert alert-danger animated fadeIn" ng-show="emailError">{{emailError}}</div>
-    <form id="register_form" ng-submit="register()">
-        <h2>Sign Up</h2>
+    <form id="register_form">
+        <h2>注册帐号</h2>
 
         <div class="input-wrapper">
-            <input required id="name" type="text" name="name" placeholder="Full Name"
+            <input required id="name" type="text" name="name" placeholder="真实名"
                    ng-model="user.name">
 
             <div class="error_message">Please enter a correct info #</div>
-            <span class="pic user"></span>
+            <span class="user"></span>
         </div>
 
         <div class="input-wrapper">
-            <input required id="email_block" type="email" name="email" placeholder="Email Address"
+            <input required id="email_block" type="text" name="email" placeholder="邮箱号码或手机号码"
                    ng-model="user.email">
 
             <div class="error_message">Please enter a correct info #</div>
-            <span class="pic email"></span>
+            <span class="email"></span>
         </div>
 
         <div class="input-wrapper">
-            <input required id="username" type="text" name="username" placeholder="Username"
+            <input required id="username" type="text" name="username" placeholder="用户名"
                    ng-model="user.username">
 
             <div class="error_message">Please enter a correct info #</div>
-            <span class="pic username"></span>
+            <span class="username"></span>
         </div>
 
         <div class="input-wrapper">
@@ -36,7 +36,7 @@
                    placeholder="{{input.placeholder}}" ng-model="user.password">
 
             <div class="error_message">Please enter a correct info #</div>
-        <span class="pic password {{input.iconClass}}" ng-click="togglePasswordVisible()">
+        <span class="password {{input.iconClass}}" ng-click="togglePasswordVisible()">
               <div class="hide_text_password">
                   {{input.tooltipText}}
               </div>
@@ -47,7 +47,7 @@
                    placeholder="{{input.placeholderConfirmPass}}" ng-model="user.confirmPassword">
 
             <div class="error_message">Please enter a correct info #</div>
-        <span class="pic password {{input.iconClassConfirmPass}}" ng-click="togglePasswordConfirmVisible()">
+        <span class="password {{input.iconClassConfirmPass}}" ng-click="togglePasswordConfirmVisible()">
               <div class="hide_text_password">
                   {{input.tooltipTextConfirmPass}}
               </div>
@@ -55,12 +55,9 @@
         </div>
 
         <div class="button_register">
-            <button type="submit" class="submit_button">Sign up</button>
-            <p>Already have an account?</p>
-            <a ui-sref='auth.login'>Log in</a>
-        </div>
-        <div class="woman_ninja_bottom">
-            <img src="/theme/assets/img/woman_ninja.png" alt="#">
+            <button type="button" class="btn btn-success btn-lg" ng-click="register()">注册</button>
+            <p>已经有帐号了?</p>
+            <a ui-sref='auth.login'>登陆</a>
         </div>
     </form>
 </div>

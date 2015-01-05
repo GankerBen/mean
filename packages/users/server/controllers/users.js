@@ -12,6 +12,13 @@ var mongoose = require('mongoose'),
     nodemailer = require('nodemailer'),
     templates = require('../template');
 
+/*******************************************/
+// 手机号格式验证
+/*******************************************/
+var phoneReg = /^1[3|4|5|8][0-9]\d{4,8}$/g;
+function isPhoneNumber(num){
+    return phoneReg.test(num);
+}
 
 /*******************************************/
 // 退出登陆
@@ -21,18 +28,26 @@ exports.signout = function (req, res) {
     res.redirect('/');
 };
 
-
 /*******************************************/
 // 注册
 /*******************************************/
 exports.create = function (req, res, next) {
 
     // 断言
-    req.assert('full_name', 'You must enter a name').notEmpty();
-    req.assert('email', 'You must enter a valid email address').isEmail();
-    req.assert('password', 'Password must be between 8-20 characters long').len(8, 20);
-    req.assert('name', 'Username cannot be more than 20 characters').len(1, 20);
-    req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
+    req.assert('full_name', '名字不能为空').notEmpty();
+
+    // 支持手机号或邮箱注册，注意：email字段也可能表示手机号码
+    var isPhone = isPhoneNumber(req.body.email);
+    if(!isPhone){
+        if(req.body.email.indexOf('@') < 0){
+            return res.status(400).send('手机号码格式不正确');
+        }
+        req.assert('email', '邮箱号码格式不对').isEmail();
+    }
+
+    req.assert('password', '密码长度必须在8至20之间').len(8, 20);
+    req.assert('name', '用户名长度必须在1至20之间').len(1, 20);
+    req.assert('confirmPassword', '密码确认不一致').equals(req.body.password);
 
     // FIXME: 如下字段需要在用户中心完善
     req.body.visibility = 10000000;
@@ -55,7 +70,7 @@ exports.create = function (req, res, next) {
                 case 11001:
                     res.status(400).json([
                         {
-                            msg: 'Username already taken',
+                            msg: '用户名已经存在',
                             param: 'username'
                         }
                     ]);
@@ -99,6 +114,14 @@ function sendMail(mailOptions) {
     });
 }
 
+/*******************************************/
+// 发送短信
+// TODO
+/*******************************************/
+function sendSMS(smsOptions){
+
+}
+
 
 /*******************************************/
 // 重置密码
@@ -106,9 +129,9 @@ function sendMail(mailOptions) {
 exports.resetpassword = function (req, res, next) {
     User.findOne({
         resetPasswordToken: req.params.token,
-        resetPasswordExpires: {
-            $gt: Date.now()
-        }
+//        resetPasswordExpires: {
+//            $gt: Date.now()
+//        }
     }, function (err, user) {
         if (err) {
             return res.status(400).json({
@@ -187,11 +210,11 @@ exports.forgotpassword = function (req, res, next) {
         ],
         function (err, status) {
             var response = {
-                message: 'Mail successfully sent',
+                message: '邮件已经成功发送',
                 status: 'success'
             };
             if (err) {
-                response.message = 'User does not exist';
+                response.message = '该用户不存在';
                 response.status = 'danger';
             }
             res.json(response);

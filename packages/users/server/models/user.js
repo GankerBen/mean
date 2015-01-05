@@ -60,14 +60,12 @@ var UserSchema = new Schema({
         required: true
     },
 
-    // 邮箱号码
+    // 邮箱号码或手机号码
     email: {
         type: String,
         required: true,
         unique: true,
-        // Regexp to validate emails with more strict rules as added in tests/users.js which also conforms mostly with RFC2822 guide lines
-        match: [/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/, 'Please enter a valid email'],
-        validate: [validateUniqueEmail, 'E-mail address is already in-use']
+        validate: [validateUniqueEmail, '邮箱号码或手机号已经存在']
     },
 
     // 帐号的可见性(可否被站内搜索等)
@@ -98,20 +96,17 @@ var UserSchema = new Schema({
     // 出生日期
     birthday: {
         type: Number
-    }
-
+    },
 
     // 重置密码需要的验证码
-//    resetPasswordToken: {
-//        type: String,
-//        default: undefined
-//    },
-//
-//    // 重置密码的时限
-//    resetPasswordExpires: {
-//        type: Date,
-//        default: undefined
-//    }
+    resetPasswordToken: {
+        type: String
+    },
+
+    // 重置密码的时限
+    resetPasswordExpires: {
+        type: Date
+    }
 
     // 手机号码
     // FIXME:暂时没有添加手机号码格式验证

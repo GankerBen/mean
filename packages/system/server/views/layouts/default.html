@@ -3,11 +3,10 @@
 {% include '../includes/head.html' %}
 
 <body data-ng-controller="ThemeController" ng-cloak class="ng-cloak" ng-class="state">
-    <div style="background-color: white; border:1px solid #FFFFFF" class="navbar navbar-inverse navbar-fixed-top" data-ng-include="'/bukasystem/views/header.html'" data-role="navigation"></div>
+    <div class="navbar navbar-inverse navbar-fixed-top" data-ng-include="'/system/views/header.html'" data-role="navigation"></div>
     <section class="content">
         <section class="container">
             {% block content %}{% endblock %}
-
         </section>
     </section>
     {% include '../includes/foot.html' %}

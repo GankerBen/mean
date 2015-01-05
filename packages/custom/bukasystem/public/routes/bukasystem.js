@@ -15,10 +15,6 @@ angular.module('mean.bukasystem').config(['$stateProvider',
                 url: '/price',
                 templateUrl: 'bukasystem/views/price.html'
             })
-            .state('console', {
-                url: '/console',
-                templateUrl: 'bukasystem/views/console.html'
-            })
             .state('docs', {
                 url: '/docs',
                 templateUrl: 'bukasystem/views/docs.html'
