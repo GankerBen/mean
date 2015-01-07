@@ -1,4 +1,4 @@
-<div data-ng-controller="LoginCtrl">
+<div data-ng-controller="LoginCtrl" class="form forgot_password_form main-form">
 
     <div class="alert alert-danger animated fadeIn" ng-show="loginerror">{{loginerror}}</div>
 
@@ -13,11 +13,6 @@
         <div class="input-wrapper">
             <input required id="password_block" name="password" type="{{input.type}}" placeholder="{{input.placeholder}}" ng-model="user.password">
             <div class="error_message">Please enter a correct info #</div>
-                <span class="password {{input.iconClass}}" ng-click = "togglePasswordVisible()">
-                      <div class="hide_text_password">
-                          {{input.tooltipText}}
-                      </div>
-                </span>
         </div>
         <div class="forgot_password">
             <a ui-sref='forgot-password'>忘记密码?</a>

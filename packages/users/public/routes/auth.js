@@ -56,10 +56,7 @@ angular.module('mean.users').config(['$meanStateProvider',
                 resolve: {
                     loggedin: checkLoggedOut
                 }
-            })
-            .state('auth.console', {
-                url: '/console',
-                templateUrl: 'users/views/console.html'
             });
+
     }
 ]);

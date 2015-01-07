@@ -5,6 +5,7 @@ angular.module('mean.system')
         function ($scope, $rootScope, Global, Menus, $http) {
             $scope.global = Global;
             $scope.menus = {};
+            $scope.root = $rootScope;
 
             // Default hard coded menu items for main menu
             var defaultMainMenu = [];
@@ -21,24 +22,20 @@ angular.module('mean.system')
             }
 
             // Query server for menus and check permissions
-            queryMenu('main', defaultMainMenu);
+//            queryMenu('main', defaultMainMenu);
 
             $scope.isCollapsed = false;
 
             $rootScope.$on('loggedin', function () {
 
-                queryMenu('main', defaultMainMenu);
+                console.log('loggedin');
+                console.log('$rootScope.user', $rootScope.user);
+                //queryMenu('main', defaultMainMenu);
 
                 $scope.global = {
                     authenticated: !!$rootScope.user,
                     user: $rootScope.user
                 };
             });
-
-            $scope.logout = function(){
-                $http.get('/logout').success(function () {
-                    // TODO
-                });
-            }
         }
     ]);

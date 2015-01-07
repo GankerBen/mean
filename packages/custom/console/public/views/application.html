@@ -1,0 +1,65 @@
+<div data-ng-controller="ApplicationCtrl">
+
+    <!-- 有应用时显示 -->
+    <div style="margin-top: 50px; color: white" ng-show="global.appInfo" data-ng-controller="AppsInfoCtrl"
+         class="container">
+
+        <div class="alert alert-{{global.console.response.status}} animated fadeIn"
+             ng-show="global.console.response.message">{{global.console.response.message}}</div>
+        <div class="nav navbar-nav">
+            <div class="input-wrapper">
+                <input style="width: 250px;
+                              border: 1px solid #d3d3d3;
+                              border-radius: 5px;
+                              padding: 10px 0 10px 10px;
+                              outline: none;
+                              font-size: 15px;
+                              font-family: 'proxima_nova_rgregular';
+                              line-height: 22px;
+                              color: black"
+                       required type="text" name="name" placeholder="您要创建的应用名称"
+                       ng-model="global.console.tempApp.name">
+                <button type="button" class="btn btn-success btn-lg" ng-click="createApp()">创建应用</button>
+            </div>
+        </div>
+
+        <table class="table table-bordered" style="margin-top: 50px">
+            <h1>
+                <caption>应用信息</caption>
+            </h1>
+            <thead>
+            <tr>
+                <th>名称</th>
+                <th>access_key_id</th>
+                <th>secret_access_key</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="app in global.appInfo">
+                <td>{{app.name}}</td>
+                <td>{{app.access_key_id}}</td>
+                <td>{{app.secret_access_key}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 无应用时显示 -->
+    <div style="margin-top: 50px" ng-hide="global.appInfo" data-ng-controller="CreateAppCtrl"
+         class="form forgot_password_form main-form">
+        <div class="alert alert-{{global.console.response.status}} animated fadeIn" ng-show="global.console.response.message">
+            {{global.console.response.message}}
+        </div>
+        <form id="register_form">
+            <h2>您目前没有创建任何应用，开始创建一个吧~</h2>
+
+            <div class="input-wrapper">
+                <input required type="text" name="name" placeholder="您要创建的应用名称"
+                       ng-model="global.console.tempApp.name">
+            </div>
+            <div>
+                <button type="button" class="btn btn-success btn-lg" ng-click="createApp()">创建</button>
+            </div>
+        </form>
+    </div>
+
+</div>

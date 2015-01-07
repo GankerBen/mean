@@ -1,0 +1,15 @@
+<div style="margin-top: 50px" class="form forgot_password_form main-form" data-ng-controller="ResetPasswordCtrl">
+    <div class="alert alert-{{_profile.status}} animated fadeIn" ng-show="_profile.resetPasswordError">{{_profile.resetPasswordError}}</div>
+    <form id="register_form">
+        <h2>修改密码</h2>
+        <div class="input-wrapper"><input required type="password" placeholder="新密码"
+                    ng-model="_profile.newPassword"></div>
+        <div class="input-wrapper">
+            <input required type="password" placeholder="确认新密码"
+                   ng-model="_profile.confirmNewPassword">
+        </div>
+        <div>
+            <button type="button" class="btn btn-success btn-lg" ng-click="_profile.resetPassword()">确认</button>
+        </div>
+    </form>
+</div>

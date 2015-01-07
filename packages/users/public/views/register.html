@@ -1,4 +1,4 @@
-<div data-ng-controller="RegisterCtrl">
+<div data-ng-controller="RegisterCtrl" class="form forgot_password_form main-form">
     <div ng-repeat="error in registerError">
         <div class="alert alert-danger animated fadeIn">{{error.msg}}</div>
     </div>
@@ -36,22 +36,12 @@
                    placeholder="{{input.placeholder}}" ng-model="user.password">
 
             <div class="error_message">Please enter a correct info #</div>
-        <span class="password {{input.iconClass}}" ng-click="togglePasswordVisible()">
-              <div class="hide_text_password">
-                  {{input.tooltipText}}
-              </div>
-        </span>
         </div>
         <div class="input-wrapper">
             <input required id="confirm_password" name="confirm_password" type="{{input.type}}"
                    placeholder="{{input.placeholderConfirmPass}}" ng-model="user.confirmPassword">
 
             <div class="error_message">Please enter a correct info #</div>
-        <span class="password {{input.iconClassConfirmPass}}" ng-click="togglePasswordConfirmVisible()">
-              <div class="hide_text_password">
-                  {{input.tooltipTextConfirmPass}}
-              </div>
-        </span>
         </div>
 
         <div class="button_register">
